@@ -1,31 +1,18 @@
-const express = require('express');
-const app = express();
-const port = 4545
-let { people } = require('./data')
+const express = require('express')
+const router = express.Router()
 
-//static assets
-app.use(express.static('./methods-public'))
-app.use(express.urlencoded({ extended: false }))
-app.use(express.json())
-
-app.get('/', (req, res) => {
-    res.send('hii')
-})
-
-app.post('/login', (req, res) => {
-    const { name } = req.body
-    if (name) {
-        return res.status(200).send(`Welcome ${name}`)
-    }
-    res.status(401).send('Please provide Name')
-})
+let { people } = require('../data')
 
 
-app.get('/api/people', (req, res) => {
+
+
+
+
+router.get('/', (req, res) => {
     res.status(200).json({ success: true, data: people })
 })
 
-app.post('/api/people', (req, res) => {
+router.post('/', (req, res) => {
     const { name } = req.body
     if (!name) {
         return res.status(400).json({ success: false, msg: 'Please provide Name' })
@@ -33,7 +20,7 @@ app.post('/api/people', (req, res) => {
     res.status(201).json({ success: true, person: name })
 })
 
-app.post('/api/people/postman', (req, res) => {
+router.post('/postman', (req, res) => {
     const { name } = req.body
     if (!name) {
         return res.status(401).json({ success: false, msg: 'Please provide Name' })
@@ -42,7 +29,7 @@ app.post('/api/people/postman', (req, res) => {
 })
 
 
-app.put('/api/people/:id', (req, res) => {
+router.put('/:id', (req, res) => {
     const { id } = req.params
     const { name } = req.body
     const person = people.find(person => person.id === Number(id))
@@ -58,7 +45,7 @@ app.put('/api/people/:id', (req, res) => {
     res.status(201).json({ success: true, data: newPeople })
 })
 
-app.delete('/api/people/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
     const person = people.find(person => person.id === Number(req.params.id))
     if (!person) {
         return res.status(404).json({ success: false, msg: `no person with id ${req.params.id}` })
@@ -68,5 +55,4 @@ app.delete('/api/people/:id', (req, res) => {
     return res.status(200).json({ success: true, data: newPeople })
 })
 
-
-app.listen(port)
+module.exports = router
